@@ -203,50 +203,30 @@ if ($_POST["operation"] == "update") {
 }
 
 if ($_POST["operation"] == "updateStatus"){
-    $id = $_POST["id"];
+    $id     = $_POST["id"];
+    $active = $_POST["active"];
 
+    $aux = $active == "0" ? "1" : "0";
     try {
-        $stmt = $conn -> prepare( "SELECT active FROM users WHERE idUser = ?" );
-        $stmt -> bind_param("s", $id);
-        $stmt -> execute();
-        $stmt -> bind_result($active);
-        
-        if ($stmt -> affected_rows) {
-            $exists = $stmt -> fetch();
-            if ($exists) {
-                $active = $active = "1"  ?  "1" : "0" ; 
-                if ($active == "1") {
-                    $stmt = $conn -> prepare( "UPDATE users SET active = ? WHERE idUser = ?" );
-                    $stmt -> bind_param("ss", $active, $id);
-                    $stmt -> execute();
 
-                    $response = array(
-                        'resp' => 'OK',
-                        'message' => 'Se ha deshabilitado este usuario'
-                    );
+        if ($active == "0") {
+            $stmt = $conn -> prepare( "UPDATE users SET active = ? WHERE idUser = ?" );
+            $stmt -> bind_param("ss", $aux, $id);
+            $stmt -> execute();
 
-                } else {
-                    $stmt = $conn -> prepare( "UPDATE users SET active = ? WHERE idUser = ?" );
-                    $stmt -> bind_param("ss", $active, $id);
-                    $stmt -> execute();
-
-                    $response = array(
-                        'resp' => 'OK',
-                        'message' => 'Se ha habilitado este usuario'
-                    );
-                }
-
-            } else {
-                $response = array(
-                    'resp' => 'Error',
-                    'message' => 'Error'
-                );
-            }
+            $response = array(
+                'resp' => 'OK',
+                'message' => 'Se ha habilitado este usuario'
+            );
 
         } else {
+            $stmt = $conn -> prepare( "UPDATE users SET active = ? WHERE idUser = ?" );
+            $stmt -> bind_param("ss", $aux, $id);
+            $stmt -> execute();
+
             $response = array(
-                'resp' => 'Error',
-                'message' => 'Error'
+                'resp' => 'OK',
+                'message' => 'Se ha deshabilitado este usuario'
             );
         }
 

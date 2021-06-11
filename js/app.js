@@ -41,6 +41,13 @@ $(() => {
 
         document.getElementById("operation").value = "create";
 
+        document.getElementById("person").value = "";
+        document.getElementById("middle").value = "";
+        document.getElementById("username-o").value = "";
+        document.getElementById("role").value = "Administrador";
+        document.getElementById("pass-o").value = "";
+        document.getElementById("userId").value = "";
+        
     })
 })
 
@@ -84,18 +91,29 @@ $(() => {
 
 StatusUser = (id) => {
 
+    let active = "0";
+
+    let checked = document.getElementById("toggle"+id).checked;
+
+    if(checked){
+        active = "0"
+    } else {
+        active = "1";
+    }
+
+    console.log(active);
+
     let data = new FormData();
 
     data.append('id',id);
     data.append('operation', 'updateStatus');
-
+    data.append('active', active);
     fetch("includes/functions.php", {
         method: "POST",
         body: data,
     })
         .then((response) => response.json())
         .then((data) => {
-            console.log(data);
 
             if (data.resp == "OK") {
                 Swal.fire({
@@ -103,9 +121,6 @@ StatusUser = (id) => {
                     title: "Correcto!",
                     text: data.message,
                 });
-                setTimeout(() => {
-                    window.location.href = data.url;
-                }, 2000);
             } else {
                 Swal.fire({
                     icon: "error",
